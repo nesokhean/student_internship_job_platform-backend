@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Middleware\ActiveUserMiddleware;
+use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\EnsureUserIsVerified;
+use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\VerifiedMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,7 +18,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'role' => RoleMiddleware::class,
+            'active' => ActiveUserMiddleware::class,
+            'verified' => VerifiedMiddleware::class,
+            'ensure.active' => EnsureUserIsActive::class,
+            'ensure.verified' => EnsureUserIsVerified::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
